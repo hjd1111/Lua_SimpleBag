@@ -1,0 +1,23 @@
+ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath .. "/" .. "item")
+if not ab then
+	print("AB Load Failed,Check Path")
+end
+sword = ab:LoadAsset("sword"):GetComponent(UI.Image)
+book = ab:LoadAsset("book"):GetComponent(UI.Image)
+apple = ab:LoadAsset("apple"):GetComponent(UI.Image)
+hp = ab:LoadAsset("hp"):GetComponent(UI.Image)
+
+MyBag = {}
+MyBag.Equips = {} --装备列表
+MyBag.Consumables = {} --消耗品列表
+--这里写死方便测试，其实应该是从某个服务器读出数据吧
+function MyBag:Init()
+	table.insert(self.Equips,{ima = sword,num = 1,describe = "一把普通的剑"})
+	table.insert(self.Equips,{ima = book,num = 1,describe = "一本六级词汇"})
+
+	table.insert(self.Consumables,{ima = apple,num = 99,describe = "一个普通的苹果,使用了什么也不会发生"})
+	table.insert(self.Consumables,{ima = hp,num = 3,describe = "看着像血瓶的一瓶毒药"})
+end
+
+MyBag:Init()
+

@@ -1,0 +1,58 @@
+Object:subClass("Grid")
+
+useUI = GameObject.Find("Canvas/OnSomethingClick")
+
+Grid.obj = nil
+Grid.ima = nil
+Grid.text = nil
+
+EquipsList = {}
+ConsumablesList = {}
+
+function Grid:Init()--初始化
+	self.obj = Resources.Load("Lua_Bag/item")
+	self.ima = self.obj.transform:GetComponent(UI.Image)
+	self.text = self.obj.transform:Find("Text"):GetComponent(UI.Text)
+end
+
+function Grid:InitData(d,isEquip)--赋值
+    self.ima.sprite = d.ima.sprite
+    self.text.text = tostring(d.num)
+end
+
+function Initbtn(o,item,index,isEquip) --道具点击事件以及使用面板点击事件
+	local btn = o.transform:GetComponent("Button")
+	local ima = o.transform:GetComponent(UI.Image)
+	local num = isEquip and EquipsList[index].transform:Find("Text"):GetComponent(UI.Text) 
+	or ConsumablesList[index].transform:Find("Text"):GetComponent(UI.Text)
+
+	btn.onClick:AddListener(function()
+		useUI:SetActive(true)
+		useUI.transform:Find("Image"):GetComponent(UI.Image).sprite = ima.sprite
+		useUI.transform:Find("Text"):GetComponent(UI.Text).text = item.describe
+		local use = useUI.transform:Find("useorequip")
+		local usebtn = use.transform:GetComponent("Button")
+		local cancel = useUI.transform:Find("cancel"):GetComponent("Button")
+
+		if(isEquip) then
+			use:Find("Text"):GetComponent(UI.Text).text = "装备"
+		else
+			use:Find("Text"):GetComponent(UI.Text).text = "使用"
+		end
+		
+		usebtn.onClick:RemoveAllListeners() --否则会多播
+			usebtn.onClick:AddListener(function()
+				local curnum = num.text - 1
+				if curnum == 0 then
+					GameObject.Destroy(o.gameObject)
+					useUI:SetActive(false)
+				else
+					num.text = num.text - 1
+				end
+				item.num = item.num - 1 --更新数据，不过写死了没啥卵用
+			end)
+		cancel.onClick:AddListener(function()
+			useUI:SetActive(false)
+		end)
+	end)
+end

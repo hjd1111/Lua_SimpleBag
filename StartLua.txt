@@ -1,0 +1,54 @@
+import "UnityEngine"
+
+require("Lua_Bag/LuaScripts/Object")
+require("Lua_Bag/LuaScripts/Grid")
+require("Lua_Bag/LuaScripts/MyBag")
+
+EquipsBag = GameObject.Find("Canvas/EquipsBag")
+ConsumablesBag = GameObject.Find("Canvas/ConsumablesBag")
+EquipsBtn = GameObject.Find("Canvas/Equips"):GetComponent("Button")
+ConsumablesBtn = GameObject.Find("Canvas/Consumables"):GetComponent("Button")
+
+
+function main()
+	Init()
+end
+
+function Init()
+	EquipsBag:SetActive(true)--界面初始化
+	ConsumablesBag:SetActive(false)
+	useUI:SetActive(false)
+
+	for i=1,#MyBag.Equips do --装备界面初始化
+		--new一个格子
+		local grid = Grid:new()
+        grid:Init()
+        grid:InitData(MyBag.Equips[i],true)
+		--实例化
+		local newitem = GameObject.Instantiate(grid.obj,Vector3.zero,Quaternion.identity)
+		table.insert(EquipsList,newitem)
+		Initbtn(newitem,MyBag.Equips[i],i,true)
+		newitem.transform:SetParent(EquipsBag.transform)
+	end
+	for i=1,#MyBag.Consumables do --消耗品界面初始化
+		local grid = Grid:new()
+        grid:Init()
+        grid:InitData(MyBag.Consumables[i],false)
+		local newitem = GameObject.Instantiate(grid.obj,Vector3.zero,Quaternion.identity)
+		table.insert(ConsumablesList,newitem)
+		Initbtn(newitem,MyBag.Consumables[i],i,false)
+		newitem.transform:SetParent(ConsumablesBag.transform)
+	end
+
+	EquipsBtn.onClick:AddListener(function() --切页事件
+		EquipsBag:SetActive(true)
+		ConsumablesBag:SetActive(false)
+	end)
+	ConsumablesBtn.onClick:AddListener(function()
+		EquipsBag:SetActive(false)
+		ConsumablesBag:SetActive(true)
+	end)
+end
+
+
+
